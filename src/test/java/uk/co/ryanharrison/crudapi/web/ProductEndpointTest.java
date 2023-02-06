@@ -97,7 +97,7 @@ class ProductEndpointTest {
     void testUpdateProduct() throws Exception {
         when(productService.getProduct(uuid)).thenReturn(Optional.of(product));
         when(productService.saveProduct(product)).thenReturn(product);
-        var jsonResponse = mockMvc.perform(post("/products/{id}", uuid)
+        var jsonResponse = mockMvc.perform(put("/products/{id}", uuid)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(JsonUtils.writeValue(product)))
                 .andExpect(status().isOk())
@@ -110,7 +110,7 @@ class ProductEndpointTest {
     @Test
     void testUpdateProductNotFound() throws Exception {
         when(productService.getProduct(uuid)).thenReturn(Optional.empty());
-        mockMvc.perform(post("/products/{id}", uuid)
+        mockMvc.perform(put("/products/{id}", uuid)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(JsonUtils.writeValue(product)))
                 .andExpect(status().isNotFound());
