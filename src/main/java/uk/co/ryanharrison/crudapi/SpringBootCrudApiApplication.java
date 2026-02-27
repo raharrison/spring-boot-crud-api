@@ -8,8 +8,6 @@ import org.springframework.context.annotation.Bean;
 import uk.co.ryanharrison.crudapi.model.Product;
 import uk.co.ryanharrison.crudapi.repository.ProductRepository;
 
-import java.time.LocalDateTime;
-
 @NullMarked
 @SpringBootApplication
 public class SpringBootCrudApiApplication {
@@ -21,24 +19,9 @@ public class SpringBootCrudApiApplication {
     @Bean
     CommandLineRunner commandLineRunner(ProductRepository productRepository) {
         return args -> {
-            productRepository.save(Product.builder()
-                    .name("product1")
-                    .type("car")
-                    .createdBy("me")
-                    .createdAt(LocalDateTime.now())
-                    .build());
-            productRepository.save(Product.builder()
-                    .name("product2")
-                    .type("car")
-                    .createdBy("me")
-                    .createdAt(LocalDateTime.now())
-                    .build());
-            productRepository.save(Product.builder()
-                    .name("product3")
-                    .type("widget")
-                    .createdBy("bob")
-                    .createdAt(LocalDateTime.now())
-                    .build());
+            productRepository.save(Product.builder().name("product1").type("car").createdBy("me").build());
+            productRepository.save(Product.builder().name("product2").type("car").createdBy("me").build());
+            productRepository.save(Product.builder().name("product3").type("widget").createdBy("bob").build());
         };
     }
 

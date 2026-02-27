@@ -43,6 +43,7 @@ class ProductEndpointTest {
             .type("type")
             .createdBy("createdBy")
             .build();
+    private final Product productRequest = product.toBuilder().id(null).build();
 
     @Test
     void testGetProducts() throws Exception {
@@ -84,14 +85,14 @@ class ProductEndpointTest {
 
     @Test
     void testCreateProduct() throws Exception {
-        when(productService.saveProduct(product)).thenReturn(product);
+        when(productService.saveProduct(productRequest)).thenReturn(product);
         var jsonResponse = mockMvc.perform(post("/products")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(JsonUtils.writeValue(product)))
+                        .content(JsonUtils.writeValue(productRequest)))
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
         assertThat(JsonUtils.readObject(jsonResponse, Product.class)).isEqualTo(product);
-        verify(productService, times(1)).saveProduct(product);
+        verify(productService, times(1)).saveProduct(productRequest);
     }
 
     @Test
@@ -120,7 +121,7 @@ class ProductEndpointTest {
     void testDeleteProduct() throws Exception {
         when(productService.deleteProduct(uuid)).thenReturn(true);
         this.mockMvc.perform(delete("/products/{id}", uuid))
-                .andExpect(status().isOk())
+                .andExpect(status().isNoContent())
                 .andReturn();
         verify(productService, times(1)).deleteProduct(uuid);
     }

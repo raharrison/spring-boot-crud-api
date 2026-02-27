@@ -33,7 +33,7 @@ public class ProductEndpoint {
 
     @PostMapping
     public ResponseEntity<Product> createProduct(@RequestBody Product product) {
-        Product saved = productService.saveProduct(product);
+        Product saved = productService.saveProduct(product.toBuilder().id(null).build());
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
@@ -44,7 +44,7 @@ public class ProductEndpoint {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteProduct(@PathVariable UUID id) {
-        return productService.deleteProduct(id) ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
+        return productService.deleteProduct(id) ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
 
 }

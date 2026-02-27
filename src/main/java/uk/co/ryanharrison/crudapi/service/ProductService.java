@@ -37,8 +37,9 @@ public class ProductService {
 
     @Transactional
     public Optional<Product> updateProduct(UUID id, Product product) {
-        return productRepository.findById(id).map(_ -> {
+        return productRepository.findById(id).map(existing -> {
             product.setId(id);
+            product.setCreatedAt(existing.getCreatedAt());
             return productRepository.save(product);
         });
     }

@@ -69,6 +69,21 @@ class ProductServiceTest {
         assertThat(saved.getName()).isEqualTo("name");
         assertThat(saved.getType()).isEqualTo("type");
         assertThat(saved.getCreatedBy()).isEqualTo("createdBy");
+        assertThat(saved.getCreatedAt()).isNotNull();
+    }
+
+    @Test
+    void testUpdateProduct() {
+        Product updated = productService.updateProduct(product.getId(), Product.builder()
+                .name("updated")
+                .type("updatedType")
+                .createdBy("updatedBy")
+                .build()).orElseThrow();
+        assertThat(updated.getId()).isEqualTo(product.getId());
+        assertThat(updated.getName()).isEqualTo("updated");
+        assertThat(updated.getType()).isEqualTo("updatedType");
+        assertThat(updated.getCreatedBy()).isEqualTo("updatedBy");
+        assertThat(updated.getCreatedAt()).isEqualTo(product.getCreatedAt());
     }
 
     @Test
