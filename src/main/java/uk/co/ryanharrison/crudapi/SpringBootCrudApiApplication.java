@@ -1,5 +1,6 @@
 package uk.co.ryanharrison.crudapi;
 
+import org.jspecify.annotations.NullMarked;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -9,10 +10,11 @@ import uk.co.ryanharrison.crudapi.repository.ProductRepository;
 
 import java.time.LocalDateTime;
 
+@NullMarked
 @SpringBootApplication
 public class SpringBootCrudApiApplication {
 
-    public static void main(String[] args) {
+    static void main(String[] args) {
         SpringApplication.run(SpringBootCrudApiApplication.class, args);
     }
 

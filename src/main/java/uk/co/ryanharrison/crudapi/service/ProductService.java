@@ -1,6 +1,7 @@
 package uk.co.ryanharrison.crudapi.service;
 
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import uk.co.ryanharrison.crudapi.repository.ProductRepository;
 import java.util.Optional;
 import java.util.UUID;
 
+@NullMarked
 @Service
 @RequiredArgsConstructor
 public class ProductService {
@@ -34,8 +36,20 @@ public class ProductService {
     }
 
     @Transactional
-    public void deleteProduct(UUID uuid) {
-        productRepository.deleteById(uuid);
+    public Optional<Product> updateProduct(UUID id, Product product) {
+        return productRepository.findById(id).map(_ -> {
+            product.setId(id);
+            return productRepository.save(product);
+        });
+    }
+
+    @Transactional
+    public boolean deleteProduct(UUID id) {
+        if (!productRepository.existsById(id)) {
+            return false;
+        }
+        productRepository.deleteById(id);
+        return true;
     }
 
 }

@@ -2,14 +2,15 @@ package uk.co.ryanharrison.crudapi.web;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.co.ryanharrison.crudapi.model.PageResponse;
 import uk.co.ryanharrison.crudapi.model.Product;
 import uk.co.ryanharrison.crudapi.model.ProductFilter;
 import uk.co.ryanharrison.crudapi.service.ProductService;
@@ -32,7 +33,7 @@ class ProductEndpointTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private ProductService productService;
 
     private final UUID uuid = UUID.randomUUID();
@@ -59,7 +60,7 @@ class ProductEndpointTest {
                         .queryParam("page", "0")
                 )
                 .andExpect(status().isOk())
-                .andExpect(content().json(JsonUtils.writeValue(productPage)));
+                .andExpect(content().json(JsonUtils.writeValue(PageResponse.of(productPage))));
         verify(productService, times(1)).getProductPage(filter, pageable);
     }
 
@@ -95,32 +96,29 @@ class ProductEndpointTest {
 
     @Test
     void testUpdateProduct() throws Exception {
-        when(productService.getProduct(uuid)).thenReturn(Optional.of(product));
-        when(productService.saveProduct(product)).thenReturn(product);
+        when(productService.updateProduct(uuid, product)).thenReturn(Optional.of(product));
         var jsonResponse = mockMvc.perform(put("/products/{id}", uuid)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(JsonUtils.writeValue(product)))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
         assertThat(JsonUtils.readObject(jsonResponse, Product.class)).isEqualTo(product);
-        verify(productService, times(1)).getProduct(uuid);
-        verify(productService, times(1)).saveProduct(product);
+        verify(productService, times(1)).updateProduct(uuid, product);
     }
 
     @Test
     void testUpdateProductNotFound() throws Exception {
-        when(productService.getProduct(uuid)).thenReturn(Optional.empty());
+        when(productService.updateProduct(uuid, product)).thenReturn(Optional.empty());
         mockMvc.perform(put("/products/{id}", uuid)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(JsonUtils.writeValue(product)))
                 .andExpect(status().isNotFound());
-        verify(productService, times(1)).getProduct(uuid);
-        verify(productService, times(0)).saveProduct(product);
+        verify(productService, times(1)).updateProduct(uuid, product);
     }
 
     @Test
     void testDeleteProduct() throws Exception {
-        when(productService.getProduct(uuid)).thenReturn(Optional.of(product));
+        when(productService.deleteProduct(uuid)).thenReturn(true);
         this.mockMvc.perform(delete("/products/{id}", uuid))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -129,12 +127,11 @@ class ProductEndpointTest {
 
     @Test
     void testDeleteProductNotFound() throws Exception {
-        when(productService.getProduct(uuid)).thenReturn(Optional.empty());
+        when(productService.deleteProduct(uuid)).thenReturn(false);
         this.mockMvc.perform(delete("/products/{id}", uuid))
                 .andExpect(status().isNotFound())
                 .andReturn();
-        verify(productService, times(1)).getProduct(uuid);
-        verify(productService, times(0)).deleteProduct(uuid);
+        verify(productService, times(1)).deleteProduct(uuid);
     }
 
 }
